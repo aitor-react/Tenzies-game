@@ -1,38 +1,101 @@
-.App {
-  text-align: center;
+* {
+  box-sizing: border-box;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+body {
+  margin: 0;
+  background-color: #0B2434;
+  padding: 20px;
+  font-family: 'Karla', sans-serif;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+main {
+  background-color: #aef5fa;
+  height: 482px;
+  min-width: 400px;
+  border-radius: 5px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.title {
+  font-size: 40px;
+  margin: 5px;
+}
+
+.instructions {
+  
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  margin-top: 0;
+  text-align: center;
+}
+
+.dice-container {
+  margin: 10px;
+  display: grid;
+  grid-template: auto auto / repeat(5, 1fr);
+  gap: 20px;
+}
+
+.die-wrap {
+  border-radius: 10px;
+}
+
+.die-face {
+  background-color: transparent;
+  width: 50px;
+  height: 50px;
+  display: grid;
+  grid-template-columns: repeat(3, 15px);
+  grid-template-rows: repeat(3, 15px);
+  cursor: pointer;
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  align-content: center;
 }
 
-.App-link {
-  color: #61dafb;
+.dot{
+  justify-self: center;
+  align-self: center;
+  background-color: black;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.die-num {
+  font-size: 2rem;
+}
+
+.roll-dice {
+  height: 50px;
+  width: 150px;
+  border: none;
+  border-radius: 6px;
+  background-color: #fcff35;
+  color: rgb(11, 10, 10);
+  font-size: 1.2rem;
+  font-family: 'Karla', sans-serif;
+  cursor: pointer;
+}
+
+.roll-dice:focus {
+  outline: none;
+}
+
+.roll-dice:active {
+  box-shadow: inset 5px 5px 10px -3px rgba(0, 0, 0, 0.7);
+}
+
+.time {
+  margin: 10px;
+  font-size: 1.5rem;
+}
+
+.record {
+  margin: 0;
 }
