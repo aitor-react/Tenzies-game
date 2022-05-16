@@ -11,30 +11,31 @@ export default function App() {
     const [tenzies, setTenzies] = React.useState(false)
     //rolls state counts the number of times the user clicks roll 
     const [rolls, setRolls] = React.useState(0)
-    //startTime takes a new date timestamp
-    const [startTime, setStartTime] = React.useState(new Date())
-    const [minutes, setMinutes] = React.useState(0)
+    //const [startTime, setStartTime] = React.useState(new Date())
     const [seconds, setSeconds] = React.useState(0)
+    const [timerOn, setTimerOn] = React.useState(false)
+    const [intervalId, setIntervalId] = React.useState(null)
     //store bestTime in local storage
     const [bestTime, setBestTime] = React.useState(
         JSON.parse(localStorage.getItem('bestTime')) || 'new'
     )
-    const [newRecord, setNewRecord] = React.useState(false)
-    const [time, setTime] = React.useState(0)
-    const [timerOn, setTimerOn] = React.useState(false)
+    //const [newRecord, setNewRecord] = React.useState(false)
+    //const [time, setTime] = React.useState(0)
+
+    const increment = ()=>setSeconds(prevSeconds=>prevSeconds+1)  
 
     React.useEffect(() => {
-      let interval = null;
+      let interval = () =>setInterval(increment,1000);
 
       if(timerOn) {
-        interval = setInterval(() => {
-          setTime(prevTime => prevTime + 10)
-        }, 10)
-      } else {
-        clearInterval(interval)
+        let answer = interval()
+        setIntervalId(answer)
+      } else if (!timerOn) {
+        clearInterval(intervalId)
+        setIntervalId(null)
       }
 
-      return () => clearInterval(interval)
+      //return () => clearInterval(interval)
     },[timerOn])  
 
 
@@ -49,17 +50,23 @@ export default function App() {
         }
     }, [dice])
     
-    //effect to update minutes and seconds when game is completed
+    //effect to update timer, set best time and store when game is completed
     React.useEffect(() => {
         if (tenzies) {
-            const spendedTime = new Date() - startTime
-            setMinutes(Math.floor(spendedTime / 60000))
-            setSeconds(Math.floor((spendedTime % 60000) / 1000))
+            setTimerOn(false)
+            if(!bestTime && tenzies) {
+            setBestTime(seconds)
+            localStorage.setItem('bestTime',seconds)
+            }
+            else if (bestTime && seconds < bestTime){
+              setBestTime(seconds)
+              localStorage.setItem('bestTime',seconds)
+            }
         }
-    },[tenzies, startTime])
+    },[tenzies])
     
-    
-    React.useEffect(() => {
+    //not needed
+    /* React.useEffect(() => {
         if (tenzies) {
             const bestSeconds = bestTime.min * 60 + bestTime.sec;
             const newSeconds = minutes * 60 + seconds;
@@ -70,7 +77,7 @@ export default function App() {
                 setNewRecord(true)
             }
          }
-    },[minutes, seconds, bestTime, tenzies])
+    },[minutes, seconds, bestTime, tenzies]) */
 
     function generateNewDie() {
         return {
@@ -88,7 +95,7 @@ export default function App() {
         return newDice
     }
     
-    function rollDice() {
+    /* function rollDice() {
         if(rolls === 0) {
             setStartTime(new Date())
         }
@@ -107,14 +114,41 @@ export default function App() {
             setNewRecord(false)
         }
         
-    }
+    } */
+
+    //updated rollDice func
+    function rollDice() {
+      if(!tenzies) {
+          if(!timerOn){
+              setTimerOn(true)
+              }
+          setDice(oldDice => oldDice.map(die => {
+              return die.isHeld ? 
+                  die :
+                  generateNewDie()
+          }))
+          setRolls(prevRolls => prevRolls+1)
+      } 
+      else if (tenzies) {
+          setTenzies(false)
+          setDice(allNewDice())
+          setRolls(0)
+          setSeconds(0)
+      }
+  }
     
     function holdDice(id) {
+      //timer state
+      if (!tenzies){
+        if(!timerOn){
+            setTimerOn(true)
+            }
         setDice(oldDice => oldDice.map(die => {
             return die.id === id ? 
                 {...die, isHeld: !die.isHeld} :
                 die
         }))
+      }  
     }
     
     const diceElements = dice.map(die => (
@@ -127,19 +161,13 @@ export default function App() {
         />
     ))
     
-    let timerMinutes = ("0" + Math.floor((time / 60000) % 60)).slice(-2)
-    let timerMiliseconds = ("0" + ((time / 10) % 100)).slice(-2)
-    let timerSeconds = ("0" + Math.floor((time / 1000) % 60)).slice(-2)
-
     return (
         <main>
             {tenzies && <Confetti />}
             <h1 className="title">Tenzies</h1>
-            <p className="instructions">{
-                newRecord ?
-                'Congratulations! You have set new record!' :
-                'Roll until all dice are the same. Click each die to freeze it at its current value between rolls.'
-            }</p>
+            <p className="instructions">
+                Roll until all dice are the same. Click each die to freeze it at its current value between rolls
+            </p>
             <div className="dice-container">
                 {diceElements}
             </div>
@@ -151,15 +179,14 @@ export default function App() {
                 {tenzies ? "New Game" : "Roll"}
             </button>
             <div className="time">
-            {!tenzies && `Timer ${timerMinutes}:${timerSeconds}:${timerMiliseconds}`}
+            Timer: {seconds} seconds
             </div>
             <div className="time">
                 
                 {tenzies && <span>New time: </span>}
-                {tenzies && minutes !== 0 && <span>{`${minutes} min `}</span>}
                 {tenzies && seconds !== 0 && <span>{`${seconds} sec`}</span>}
             </div>
-            {bestTime !== 'new' && <h2 className='record'>{`Record: ${bestTime.min} min ${bestTime.sec} sec`}</h2>}
+            {bestTime !== 'new' && <h2 className='record'>{`Record: ${seconds} sec`}</h2>}
         </main>
     )
 }
