@@ -1,7 +1,7 @@
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).\
-The deployed site can be found here https://tenzies-app-demo.netlify.app/ 
+The deployed site can be found here https://finished-app-demo.netlify.app/ 
 
 ## Available Scripts
 
